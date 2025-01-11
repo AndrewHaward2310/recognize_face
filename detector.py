@@ -46,6 +46,7 @@ class Detector:
                             (fx, fy + fh + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
 
     def detect_faces(self, img, register_mode=False, user_name=None):
+        self.recognizer.load_label_map()  # Reload JSON-based label map each time
         self.register_mode = register_mode
         self.user_name = user_name
 
