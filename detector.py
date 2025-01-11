@@ -121,11 +121,11 @@ class Detector:
         cv2.circle(img, (fx + self.bounding_boxes[face_id][2] // 2,
                         fy + self.bounding_boxes[face_id][3] // 2), 50, (0, 0, 255), 2)
         cv2.putText(img, label, (fx + 15, fy - 15),
-                    cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+                    cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
         cv2.line(img, (0, fy + self.bounding_boxes[face_id][3] // 2),
-                 (ws, fy + self.bounding_boxes[face_id][3] // 2), (0, 0, 0), 2)
+                 (hs, fy + self.bounding_boxes[face_id][3] // 2), (0, 0, 0), 2)
         cv2.line(img, (fx + self.bounding_boxes[face_id][2] // 2, 0),
-                 (fx + self.bounding_boxes[face_id][2] // 2, hs), (0, 0, 0), 2)
+                 (fx + self.bounding_boxes[face_id][2] // 2, ws), (0, 0, 0), 2)
         cv2.circle(img, (fx + self.bounding_boxes[face_id][2] // 2,
                         fy + self.bounding_boxes[face_id][3] // 2), 15, (0, 0, 255), cv2.FILLED)
         cv2.putText(img, "TARGET LOCKED", (850, 50),

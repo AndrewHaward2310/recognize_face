@@ -59,23 +59,13 @@ class Recognizer:
     def save_label_map(self):
         import pandas as pd
         label_map_data = {}
-        
-        # Load users
         users_file = "users.xlsx"
         if os.path.exists(users_file):
             df_users = pd.read_excel(users_file)
             for idx, row in df_users.iterrows():
-                label_map_data[str(idx)] = {"name": row["Name"], "type": "User"}
-        
-        # Load enemies
-        enemies_file = "enemies.xlsx"
-        if os.path.exists(enemies_file):
-            df_enemies = pd.read_excel(enemies_file)
-            for idx, row in df_enemies.iterrows():
-                label_map_data[str(len(label_map_data))] = {"name": row["Name"], "type": "Enemy"}
-        
+                label_map_data[str(idx)] = {"name": row["Name"], "type": row["Type"]}
+
         self.label_map = label_map_data
-        
         with open(self.label_map_path, "w") as f:
             json.dump(self.label_map, f, indent=4)
         print(f"Label map saved to {self.label_map_path}")

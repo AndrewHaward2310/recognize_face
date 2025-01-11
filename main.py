@@ -120,12 +120,21 @@ class MainWindow(QMainWindow):
         df_users.to_excel(users_file, index=False)
 
         # Update the label map to include the new enemies
-        self.recognizer.save_label_map()
+        recognizer.save_label_map()
+        recognizer.load_label_map()  # Reload so detector sees the new Enemy type
         self.uic.logBox.append("Updated label with new enemy entries.")
 
         # Reload the user table in the UI
         self.loadUsersToTable()
+        self.uic.logBox.append("Reloaded user table.")
 
+    def closeEvent(self, event):
+        # Ensure threads are properly closed when the application exits
+        self.control_servo.stop()
+        if self.camera_thread.isRunning():
+            self.camera_thread.stop()
+            self.camera_thread.wait()
+        event.accept()
 
     def keyPressEvent(self, event):
         if event.text() == 'a':
@@ -142,31 +151,24 @@ class MainWindow(QMainWindow):
 
     def loadUsersToTable(self):
         users_file = "users.xlsx"
-        enemies_file = "enemies.xlsx"
-        
-        # Load users and enemies
-        df_users = pd.read_excel(users_file) if os.path.exists(users_file) else pd.DataFrame()
-        df_enemies = pd.read_excel(enemies_file) if os.path.exists(enemies_file) else pd.DataFrame()
-        
-        # Add Type column
-        if not df_users.empty:
-            df_users['Type'] = 'User'
-        if not df_enemies.empty:
-            df_enemies['Type'] = 'Enemy'
-        
-        # Combine data
-        df_combined = pd.concat([df_users, df_enemies], ignore_index=True)
-        
-        # Create model
+
+        if not os.path.exists(users_file):
+            df_users = pd.DataFrame(columns=["Name", "Sex", "RegisterTime", "Type"])
+            df_users.to_excel(users_file, index=False)
+            self.uic.logBox.append("Created users.xlsx.")
+        else:
+            df_users = pd.read_excel(users_file)
+
         model = QStandardItemModel()
-        if not df_combined.empty:
-            model.setHorizontalHeaderLabels(df_combined.columns.tolist())
-            for row in range(df_combined.shape[0]):
-                for col in range(df_combined.shape[1]):
-                    item = QStandardItem(str(df_combined.iat[row, col]))
+        if not df_users.empty:
+            model.setHorizontalHeaderLabels(df_users.columns.tolist())
+            for row in range(df_users.shape[0]):
+                for col in range(df_users.shape[1]):
+                    item = QStandardItem(str(df_users.iat[row, col]))
                     model.setItem(row, col, item)
-        
+
         self.uic.infoTable.setModel(model)
+        self.uic.logBox.append("Loaded users into table.")
 
 
     def closeEvent(self, event):
